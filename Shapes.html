@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Canvas Kids - Shapes & Sizes | Fun Learning</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -314,15 +315,20 @@
     </style>
 </head>
 <body>
-    <nav id="top-nav">
+        <nav id="top-nav">
         <div class="nav-left">
-            <button id="btn-home" class="nav-btn" onclick="window.location.href='index.html'" aria-label="Home">🏠</button>
+            <button id="btn-home" class="nav-btn" onclick="window.location.href='index.html'" aria-label="Home" title="Home">
+                <i class="fa-solid fa-house"></i>
+            </button>
             <h1 class="nav-logo">Canvas Kids</h1>
         </div>
         <div class="nav-right">
-            <button id="btn-bgm" class="nav-btn" aria-label="Background Music">🎵</button>
-            <button id="btn-sound" class="nav-btn" aria-label="Sound Effects">🔊</button>
-            <button id="btn-theme" class="nav-btn" aria-label="Dark/Light Mode">🌙</button>
+            <button id="btn-sound" class="nav-btn" aria-label="Toggle Sound Effects" title="Toggle Sound">
+                <i class="fa-solid fa-volume-high"></i>
+            </button>
+            <button id="btn-theme" class="nav-btn" aria-label="Toggle Theme" title="Toggle Theme">
+                <i class="fa-solid fa-moon"></i>
+            </button>
         </div>
     </nav>
 
@@ -560,10 +566,10 @@
             if (savedTheme === 'dark') {
                 AppState.isDarkMode = true;
                 document.body.classList.add('dark-theme');
-                btnTheme.innerHTML = '☀️';
+                btnTheme.innerHTML = '<i class="fa-solid fa-sun"></i>';
             } else {
                 document.body.classList.remove('dark-theme');
-                btnTheme.innerHTML = '🌙';
+                btnTheme.innerHTML = '<i class="fa-solid fa-moon"></i>';
             }
         }
         
@@ -571,11 +577,11 @@
             AppState.isDarkMode = !AppState.isDarkMode;
             if (AppState.isDarkMode) {
                 document.body.classList.add('dark-theme');
-                btnTheme.innerHTML = '☀️';
+                btnTheme.innerHTML = '<i class="fa-solid fa-sun"></i>';
                 localStorage.setItem('canvasKidsTheme', 'dark');
             } else {
                 document.body.classList.remove('dark-theme');
-                btnTheme.innerHTML = '🌙';
+                btnTheme.innerHTML = '<i class="fa-solid fa-moon"></i>';
                 localStorage.setItem('canvasKidsTheme', 'light');
             }
             playClickSound();
@@ -586,11 +592,11 @@
         function toggleSound() {
             AppState.isSoundOn = !AppState.isSoundOn;
             if (AppState.isSoundOn) {
-                btnSound.innerHTML = '🔊';
+                btnSound.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
                 btnSound.classList.remove('off');
                 speakMessage('Sound on!');
             } else {
-                btnSound.innerHTML = '🔇';
+                btnSound.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
                 btnSound.classList.add('off');
                 window.speechSynthesis.cancel();
             }

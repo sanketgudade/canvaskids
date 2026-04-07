@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Canvas Kids - Fruits & Vegetables</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -277,17 +278,20 @@
     </style>
 </head>
 <body>
-    <nav id="top-nav">
+        <nav id="top-nav">
         <div class="nav-left">
             <button id="btn-home" class="nav-btn" onclick="window.location.href='index.html'" aria-label="Home" title="Home">
-                🏠
+                <i class="fa-solid fa-house"></i>
             </button>
             <h1 class="nav-logo">Canvas Kids</h1>
         </div>
         <div class="nav-right">
-            <button id="btn-bgm" class="nav-btn" aria-label="Background Music">🎵</button>
-            <button id="btn-sound" class="nav-btn" aria-label="Sound Effects">🔊</button>
-            <button id="btn-theme" class="nav-btn" aria-label="Dark/Light Mode">🌙</button>
+            <button id="btn-sound" class="nav-btn" aria-label="Toggle Sound Effects" title="Toggle Sound">
+                <i class="fa-solid fa-volume-high"></i>
+            </button>
+            <button id="btn-theme" class="nav-btn" aria-label="Toggle Theme" title="Toggle Theme">
+                <i class="fa-solid fa-moon"></i>
+            </button>
         </div>
     </nav>
 
@@ -295,18 +299,18 @@
         <section id="sec-fruits" class="view-section active">
             <div class="section-header">
                 <h2>🍎 Fruits & Vegetables 🥕</h2>
-                <button class="nav-btn btn-bounce" onclick="speakMessage('Fruits and vegetables are healthy and yummy! Tap any name to learn.')">
+                <button class="nav-btn btn-bounce" onclick="speakMessage('Tap any fruit or vegetable name to learn')">
                     🔁
                 </button>
             </div>
 
-            <!-- Fruits Section - Only names, no icons -->
+            <!-- Fruits Section - Only names -->
             <div class="category-title">
                 <span>🍓 FRUITS</span>
             </div>
             <div class="grid-container" id="fruits-grid"></div>
 
-            <!-- Vegetables Section - Only names, no icons -->
+            <!-- Vegetables Section - Only names -->
             <div class="category-title">
                 <span>🥬 VEGETABLES</span>
             </div>
@@ -314,7 +318,7 @@
         </section>
     </main>
 
-    <!-- Simple message popup instead of image modal -->
+    <!-- Simple message popup -->
     <div id="messagePopup" class="message-popup"></div>
 
     <audio id="bgm-player" loop>
@@ -323,8 +327,8 @@
 
     <script>
         // ============================================================
-        // SIMPLE FRUITS & VEGETABLES - NO IMAGES, NO FONTAWESOME ICONS
-        // Just names and speech feedback
+        // SIMPLE FRUITS & VEGETABLES - ONLY SPEAKS THE NAME
+        // No extra words like "delicious" or "healthy"
         // ============================================================
         
         const fruitsData = [
@@ -354,7 +358,7 @@
         const messagePopup = document.getElementById('messagePopup');
         let popupTimeout = null;
 
-        // ========== SPEECH SYNTHESIS ==========
+        // ========== SPEECH SYNTHESIS - ONLY SPEAKS THE NAME ==========
         function speakMessage(text) {
             if (!AppState.isSoundOn) return;
             if (!('speechSynthesis' in window)) return;
@@ -375,7 +379,7 @@
                 if (popupTimeout) clearTimeout(popupTimeout);
                 popupTimeout = setTimeout(() => {
                     messagePopup.classList.remove('show');
-                }, 1800);
+                }, 1500);
             }
         }
 
@@ -398,7 +402,7 @@
             } catch(e) { /* silent fallback */ }
         }
 
-        // Simple confetti for fun (optional but kids love it)
+        // Simple confetti for fun
         function triggerConfetti() {
             const canvas = document.createElement('canvas');
             canvas.style.position = 'fixed';
@@ -456,16 +460,17 @@
             animate();
         }
 
-        // Handle click on fruit/vegetable
-        function onItemClick(itemName, category) {
+        // Handle click on fruit/vegetable - ONLY SPEAKS THE NAME, no extra words
+        function onItemClick(itemName) {
             playClickSound();
             triggerConfetti();
-            const message = `${itemName}! A delicious ${category.toLowerCase()}.`;
+            // Only show the name in popup
             showMessage(itemName);
-            speakMessage(message);
+            // Only speak the name - nothing else!
+            speakMessage(itemName);
         }
 
-        // ========== GENERATE FRUITS CARDS - NO ICONS, JUST NAME ==========
+        // ========== GENERATE FRUITS CARDS ==========
         function generateFruits() {
             const container = document.getElementById('fruits-grid');
             if (!container) return;
@@ -474,17 +479,16 @@
             fruitsData.forEach(fruit => {
                 const card = document.createElement('div');
                 card.className = 'food-card';
-                // Only the name and tiny hint
                 card.innerHTML = `
                     <h3>${fruit}</h3>
-                    <div class="click-hint">▼ tap ▼</div>
+                    <div class="click-hint"></div>
                 `;
-                card.onclick = () => onItemClick(fruit, 'Fruit');
+                card.onclick = () => onItemClick(fruit);
                 container.appendChild(card);
             });
         }
 
-        // ========== GENERATE VEGETABLES CARDS - NO ICONS ==========
+        // ========== GENERATE VEGETABLES CARDS ==========
         function generateVegetables() {
             const container = document.getElementById('vegetables-grid');
             if (!container) return;
@@ -495,9 +499,9 @@
                 card.className = 'food-card';
                 card.innerHTML = `
                     <h3>${vegetable}</h3>
-                    <div class="click-hint">▼ tap ▼</div>
+                    <div class="click-hint"></div>
                 `;
-                card.onclick = () => onItemClick(vegetable, 'Vegetable');
+                card.onclick = () => onItemClick(vegetable);
                 container.appendChild(card);
             });
         }
@@ -508,10 +512,10 @@
             if (savedTheme === 'dark') {
                 AppState.isDarkMode = true;
                 document.body.classList.add('dark-theme');
-                btnTheme.innerHTML = '☀️';
+                if (btnTheme) btnTheme.innerHTML = '<i class="fa-solid fa-sun"></i>';
             } else {
                 document.body.classList.remove('dark-theme');
-                btnTheme.innerHTML = '🌙';
+                if (btnTheme) btnTheme.innerHTML = '<i class="fa-solid fa-moon"></i>';
             }
         }
         
@@ -519,44 +523,48 @@
             AppState.isDarkMode = !AppState.isDarkMode;
             if (AppState.isDarkMode) {
                 document.body.classList.add('dark-theme');
-                btnTheme.innerHTML = '☀️';
+                btnTheme.innerHTML = '<i class="fa-solid fa-sun"></i>';
                 localStorage.setItem('canvasKidsTheme', 'dark');
             } else {
                 document.body.classList.remove('dark-theme');
-                btnTheme.innerHTML = '🌙';
+                btnTheme.innerHTML = '<i class="fa-solid fa-moon"></i>';
                 localStorage.setItem('canvasKidsTheme', 'light');
             }
             playClickSound();
-            speakMessage(AppState.isDarkMode ? 'Dark mode on' : 'Light mode on');
+            speakMessage(AppState.isDarkMode ? 'Dark mode' : 'Light mode');
         }
 
         // ========== SOUND TOGGLE ==========
         function toggleSound() {
             AppState.isSoundOn = !AppState.isSoundOn;
             if (AppState.isSoundOn) {
-                btnSound.innerHTML = '🔊';
+                btnSound.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
                 btnSound.classList.remove('off');
-                speakMessage('Sound on!');
+                speakMessage('Sound on');
             } else {
-                btnSound.innerHTML = '🔇';
+                btnSound.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
                 btnSound.classList.add('off');
                 window.speechSynthesis.cancel();
             }
             playClickSound();
         }
 
-        // ========== BGM TOGGLE ==========
+        // ========== BGM TOGGLE (if BGM button exists) ==========
         function toggleBgm() {
             AppState.isBgmOn = !AppState.isBgmOn;
             if (AppState.isBgmOn) {
                 bgmPlayer.play().catch(e => console.log('autoplay blocked'));
-                btnBgm.innerHTML = '🎵';
-                btnBgm.classList.remove('off');
+                if (btnBgm) {
+                    btnBgm.innerHTML = '🎵';
+                    btnBgm.classList.remove('off');
+                }
             } else {
                 bgmPlayer.pause();
-                btnBgm.innerHTML = '🎵';
-                btnBgm.classList.add('off');
-                btnBgm.style.opacity = '0.6';
+                if (btnBgm) {
+                    btnBgm.innerHTML = '🎵';
+                    btnBgm.classList.add('off');
+                    btnBgm.style.opacity = '0.6';
+                }
             }
             playClickSound();
         }
@@ -575,16 +583,16 @@
             bindEvents();
             initTheme();
             
-            // BGM starts muted by default
+            // BGM starts muted by default (if BGM button exists)
             if (btnBgm) {
                 btnBgm.classList.add('off');
                 btnBgm.style.opacity = '0.6';
             }
             
-            // welcome message
+            // Welcome message - only says welcome
             setTimeout(() => {
-                speakMessage('Welcome! Tap any fruit or vegetable name to learn.');
-                showMessage('👋 Tap any item!');
+                speakMessage('Welcome');
+                showMessage('👋');
             }, 500);
         }
 
