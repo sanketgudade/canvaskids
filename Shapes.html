@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Canvas Kids - Shapes & Sizes | Fun Learning</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #ff5e7e;
+            --secondary-color: #4dc2ff;
+            --accent-color: #ffc93c;
+            --success-color: #5deb7a;
+            --warning-color: #ffa500;
+            --bg-color: #f0f8ff;
+            --nav-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --card-bg: #ffffff;
+            --card-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            --hover-shadow: 0 12px 32px rgba(0,0,0,0.15);
+            --border-radius: 24px;
+            --transition: all 0.3s ease;
+        }
+
+        body.dark-theme {
+            --primary-color: #ff476c;
+            --secondary-color: #29b6f6;
+            --accent-color: #ffca28;
+            --success-color: #66bb6a;
+            --warning-color: #ffa726;
+            --bg-color: #121212;
+            --nav-bg: #1e1e1e;
+            --text-main: #f0f0f0;
+            --text-muted: #aaaaaa;
+            --card-bg: #2d2d2d;
+            --card-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            --hover-shadow: 0 12px 32px rgba(0,0,0,0.6);
+        }
+
+        body {
+            font-family: 'Fredoka', 'Segoe UI', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            transition: var(--transition);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        #top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: var(--nav-bg);
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            transition: var(--transition);
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-logo {
+            font-size: 28px;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .nav-btn {
+            background: var(--bg-color);
+            color: var(--secondary-color);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+
+        .nav-btn.off {
+            color: var(--warning-color);
+            opacity: 0.7;
+        }
+
+        /* Main Content */
+        #app-content {
+            padding: 30px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .view-section {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            background: var(--card-bg);
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+        }
+
+        .section-header h2 {
+            color: var(--primary-color);
+            font-size: 32px;
+        }
+
+        /* Visual Display Box */
+        .visual-display-box {
+            background: var(--card-bg);
+            padding: 40px 30px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        #shape-display {
+            margin: 20px auto;
+            transition: all 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .shape-object {
+            background-color: var(--primary-color);
+            transition: all 0.25s ease;
+        }
+
+        /* Individual shape styles */
+        .shape-circle { border-radius: 50%; }
+        .shape-square { border-radius: 12px; }
+        .shape-rectangle { border-radius: 12px; width: 180px !important; height: 110px !important; }
+        .shape-oval { border-radius: 50%; width: 160px !important; height: 100px !important; }
+        .shape-star { clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); background-color: var(--primary-color); }
+        .shape-heart { background-color: transparent !important; position: relative; width: 100px !important; height: 90px !important; }
+        .shape-heart::before, .shape-heart::after { content: ""; position: absolute; top: 0; width: 50px; height: 80px; border-radius: 50px 50px 0 0; background: var(--primary-color); }
+        .shape-heart::before { left: 50px; transform: rotate(-45deg); transform-origin: 0 100%; }
+        .shape-heart::after { left: 0; transform: rotate(45deg); transform-origin: 100% 100%; }
+        .shape-diamond { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+        .shape-pentagon { clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); }
+        .shape-hexagon { clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+        .shape-octagon { clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%); }
+        .shape-crescent { background-color: transparent !important; position: relative; width: 100px !important; height: 100px !important; }
+        .shape-crescent::before { content: ""; position: absolute; width: 100px; height: 100px; background: var(--primary-color); border-radius: 50%; box-shadow: -20px -10px 0 0 var(--card-bg); }
+        .shape-trapezoid { clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%); }
+        .shape-semicircle { clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 50% 100%, 0% 0%); border-radius: 0 0 50% 50% / 0 0 100% 100%; background-color: var(--primary-color); }
+        .shape-semicircle { clip-path: inset(0 0 0 0 round 0 0 100% 100% / 0 0 100% 100%); height: 80px !important; border-radius: 0 0 100px 100px; }
+        .shape-cross { background-color: transparent !important; position: relative; width: 100px !important; height: 100px !important; }
+        .shape-cross::before { content: ""; position: absolute; width: 25px; height: 100px; background: var(--primary-color); top: 0; left: 37.5px; border-radius: 8px; }
+        .shape-cross::after { content: ""; position: absolute; width: 100px; height: 25px; background: var(--primary-color); top: 37.5px; left: 0; border-radius: 8px; }
+        .shape-triangle { background-color: transparent !important; width: 0 !important; height: 0 !important; border-left: 70px solid transparent; border-right: 70px solid transparent; border-bottom: 120px solid var(--primary-color); }
+
+        /* Size variants */
+        .size-big.shape-circle, .size-big.shape-square, .size-big.shape-star, .size-big.shape-diamond,
+        .size-big.shape-pentagon, .size-big.shape-hexagon, .size-big.shape-octagon, .size-big.shape-crescent,
+        .size-big.shape-cross, .size-big.shape-heart {
+            width: 180px !important;
+            height: 180px !important;
+        }
+        .size-big.shape-rectangle { width: 220px !important; height: 130px !important; }
+        .size-big.shape-oval { width: 200px !important; height: 120px !important; }
+        .size-big.shape-triangle { border-left: 90px solid transparent; border-right: 90px solid transparent; border-bottom: 150px solid var(--primary-color); }
+        .size-big.shape-trapezoid { width: 220px !important; height: 140px !important; }
+        .size-big.shape-semicircle { width: 180px !important; height: 100px !important; }
+        .size-big.shape-heart { width: 130px !important; height: 115px !important; }
+        .size-big.shape-heart::before, .size-big.shape-heart::after { width: 65px; height: 100px; }
+        .size-big.shape-crescent { width: 130px !important; height: 130px !important; }
+        .size-big.shape-crescent::before { width: 130px; height: 130px; box-shadow: -25px -12px 0 0 var(--card-bg); }
+        .size-big.shape-cross { width: 130px !important; height: 130px !important; }
+        .size-big.shape-cross::before { width: 32px; height: 130px; left: 49px; }
+        .size-big.shape-cross::after { width: 130px; height: 32px; top: 49px; }
+
+        .size-small.shape-circle, .size-small.shape-square, .size-small.shape-star, .size-small.shape-diamond,
+        .size-small.shape-pentagon, .size-small.shape-hexagon, .size-small.shape-octagon, .size-small.shape-crescent,
+        .size-small.shape-cross, .size-small.shape-heart {
+            width: 100px !important;
+            height: 100px !important;
+        }
+        .size-small.shape-rectangle { width: 130px !important; height: 75px !important; }
+        .size-small.shape-oval { width: 110px !important; height: 65px !important; }
+        .size-small.shape-triangle { border-left: 50px solid transparent; border-right: 50px solid transparent; border-bottom: 85px solid var(--primary-color); }
+        .size-small.shape-trapezoid { width: 120px !important; height: 80px !important; }
+        .size-small.shape-semicircle { width: 100px !important; height: 55px !important; }
+        .size-small.shape-heart { width: 70px !important; height: 65px !important; }
+        .size-small.shape-heart::before, .size-small.shape-heart::after { width: 35px; height: 55px; }
+        .size-small.shape-crescent { width: 70px !important; height: 70px !important; }
+        .size-small.shape-crescent::before { width: 70px; height: 70px; box-shadow: -14px -7px 0 0 var(--card-bg); }
+        .size-small.shape-cross { width: 70px !important; height: 70px !important; }
+        .size-small.shape-cross::before { width: 18px; height: 70px; left: 26px; }
+        .size-small.shape-cross::after { width: 70px; height: 18px; top: 26px; }
+
+        #shape-name {
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 20px 0 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Shape buttons grid */
+        .shapes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 14px;
+            margin: 25px 0 20px;
+        }
+
+        .shape-btn {
+            background: var(--card-bg);
+            border: 3px solid var(--secondary-color);
+            color: var(--text-main);
+            padding: 12px 8px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Fredoka', sans-serif;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .shape-btn:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: scale(1.05);
+            border-color: var(--primary-color);
+        }
+
+        /* Size toggle button */
+        .size-toggle {
+            background: var(--warning-color);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 22px;
+            font-weight: 700;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Fredoka', sans-serif;
+            margin-top: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .size-toggle:hover {
+            transform: scale(1.05);
+            background: #ff8c00;
+        }
+
+        .btn-bounce:hover {
+            animation: bounce 0.4s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-6px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            #top-nav { padding: 10px 15px; }
+            .nav-logo { font-size: 22px; }
+            #app-content { padding: 20px; }
+            .section-header h2 { font-size: 26px; }
+            .shapes-grid { grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap: 10px; }
+            .shape-btn { font-size: 13px; padding: 10px 6px; }
+            #shape-name { font-size: 32px; }
+            .size-toggle { font-size: 18px; padding: 10px 24px; }
+        }
+    </style>
+</head>
+<body>
+    <nav id="top-nav">
+        <div class="nav-left">
+            <button id="btn-home" class="nav-btn" onclick="window.location.href='index.html'" aria-label="Home">🏠</button>
+            <h1 class="nav-logo">Canvas Kids</h1>
+        </div>
+        <div class="nav-right">
+            <button id="btn-bgm" class="nav-btn" aria-label="Background Music">🎵</button>
+            <button id="btn-sound" class="nav-btn" aria-label="Sound Effects">🔊</button>
+            <button id="btn-theme" class="nav-btn" aria-label="Dark/Light Mode">🌙</button>
+        </div>
+    </nav>
+
+    <main id="app-content">
+        <section id="sec-shapes" class="view-section active">
+            <div class="section-header">
+                <h2>⭐ Shapes & Sizes ⭐</h2>
+                <button class="nav-btn btn-bounce" onclick="speakMessage('Let us learn shapes and sizes! Tap any shape to see it')">🔁</button>
+            </div>
+
+            <div class="visual-display-box">
+                <div id="shape-display" class="shape-object shape-circle size-big"></div>
+                <h3 id="shape-name">Circle</h3>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">👇 Click any shape to see it appear! 👇</p>
+            </div>
+
+            <!-- All 15 shapes grid -->
+            <div class="shapes-grid" id="shapes-grid"></div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="size-toggle btn-bounce" id="toggleSizeBtn">
+                    🔄 Toggle BIG / SMALL
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <audio id="bgm-player" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-funny-puppy-music-loop-2746.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // ========== ALL 15 SHAPES (exactly as requested) ==========
+        const shapesList = [
+            { name: 'Circle', shapeClass: 'shape-circle' },
+            { name: 'Square', shapeClass: 'shape-square' },
+            { name: 'Triangle', shapeClass: 'shape-triangle' },
+            { name: 'Rectangle', shapeClass: 'shape-rectangle' },
+            { name: 'Oval', shapeClass: 'shape-oval' },
+            { name: 'Star', shapeClass: 'shape-star' },
+            { name: 'Heart', shapeClass: 'shape-heart' },
+            { name: 'Diamond', shapeClass: 'shape-diamond' },
+            { name: 'Pentagon', shapeClass: 'shape-pentagon' },
+            { name: 'Hexagon', shapeClass: 'shape-hexagon' },
+            { name: 'Octagon', shapeClass: 'shape-octagon' },
+            { name: 'Crescent', shapeClass: 'shape-crescent' },
+            { name: 'Trapezoid', shapeClass: 'shape-trapezoid' },
+            { name: 'Semicircle', shapeClass: 'shape-semicircle' },
+            { name: 'Cross', shapeClass: 'shape-cross' }
+        ];
+
+        // ========== APP STATE ==========
+        const AppState = {
+            isBgmOn: false,
+            isSoundOn: true,
+            isDarkMode: false,
+            currentSizeBig: true,
+            currentShapeClass: 'shape-circle',
+            currentShapeName: 'Circle'
+        };
+
+        // DOM Elements
+        const bgmPlayer = document.getElementById('bgm-player');
+        const btnBgm = document.getElementById('btn-bgm');
+        const btnSound = document.getElementById('btn-sound');
+        const btnTheme = document.getElementById('btn-theme');
+        const shapeDisplay = document.getElementById('shape-display');
+        const shapeNameElem = document.getElementById('shape-name');
+        const toggleSizeBtn = document.getElementById('toggleSizeBtn');
+        const shapesGrid = document.getElementById('shapes-grid');
+
+        // ========== SPEECH FUNCTION ==========
+        function speakMessage(text) {
+            if (!AppState.isSoundOn) return;
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            utterance.pitch = 1.15;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Click sound effect (gentle beep)
+        function playClickSound() {
+            if (!AppState.isSoundOn) return;
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(720, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(1100, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.12);
+            } catch(e) { console.log("Audio not supported"); }
+        }
+
+        // Fun confetti effect for kids' joy
+        function triggerConfetti() {
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'fixed';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100vw';
+            canvas.style.height = '100vh';
+            canvas.style.pointerEvents = 'none';
+            canvas.style.zIndex = '9999';
+            document.body.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const pieces = [];
+            const colors = ['#ff5e7e', '#4dc2ff', '#ffc93c', '#5deb7a', '#ffa500', '#e91e63', '#9c27b0'];
+            for (let i = 0; i < 60; i++) {
+                pieces.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    vx: (Math.random() - 0.5) * 15,
+                    vy: (Math.random() - 1) * 15 - 5,
+                    size: Math.random() * 9 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rotation: Math.random() * 360,
+                    rs: (Math.random() - 0.5) * 12
+                });
+            }
+            let opacity = 0.9;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let active = false;
+                for (let p of pieces) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.4;
+                    p.rotation += p.rs;
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = opacity;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+                    if (p.y < canvas.height + 50) active = true;
+                }
+                if (active && opacity > 0) {
+                    opacity -= 0.01;
+                    requestAnimationFrame(animate);
+                } else {
+                    document.body.removeChild(canvas);
+                }
+            }
+            animate();
+        }
+
+        // ========== UPDATE SHAPE DISPLAY ==========
+        function updateShape(shapeClass, shapeName) {
+            if (!shapeDisplay) return;
+            
+            // Remove all existing shape classes
+            const existingClasses = shapeDisplay.className.split(' ');
+            const newClasses = existingClasses.filter(cls => 
+                !cls.startsWith('shape-') || cls === 'shape-object'
+            );
+            
+            // Add new shape class
+            let finalClassList = 'shape-object ' + shapeClass;
+            
+            // Add size class
+            finalClassList += AppState.currentSizeBig ? ' size-big' : ' size-small';
+            
+            shapeDisplay.className = finalClassList;
+            shapeNameElem.textContent = shapeName;
+            
+            // Store current
+            AppState.currentShapeClass = shapeClass;
+            AppState.currentShapeName = shapeName;
+            
+            // Add bounce animation
+            shapeDisplay.style.transform = 'scale(1.08)';
+            setTimeout(() => {
+                if (shapeDisplay) shapeDisplay.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        // ========== TOGGLE SIZE ==========
+        function toggleSize() {
+            AppState.currentSizeBig = !AppState.currentSizeBig;
+            
+            if (shapeDisplay) {
+                const currentClasses = shapeDisplay.className.split(' ');
+                let shapeClass = AppState.currentShapeClass;
+                let newClass = 'shape-object ' + shapeClass;
+                newClass += AppState.currentSizeBig ? ' size-big' : ' size-small';
+                shapeDisplay.className = newClass;
+                
+                speakMessage(AppState.currentSizeBig ? 'Big size' : 'Small size');
+                playClickSound();
+                
+                // Pop effect
+                shapeDisplay.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    if (shapeDisplay) shapeDisplay.style.transform = 'scale(1)';
+                }, 200);
+            }
+        }
+
+        // ========== GENERATE ALL SHAPE BUTTONS ==========
+        function generateShapeButtons() {
+            if (!shapesGrid) return;
+            shapesGrid.innerHTML = '';
+            
+            shapesList.forEach(shape => {
+                const btn = document.createElement('button');
+                btn.className = 'shape-btn';
+                btn.textContent = shape.name;
+                btn.onclick = () => {
+                    playClickSound();
+                    triggerConfetti();
+                    updateShape(shape.shapeClass, shape.name);
+                    speakMessage(`${shape.name} shape!`);
+                };
+                shapesGrid.appendChild(btn);
+            });
+        }
+
+        // ========== THEME TOGGLE ==========
+        function initTheme() {
+            const savedTheme = localStorage.getItem('canvasKidsTheme');
+            if (savedTheme === 'dark') {
+                AppState.isDarkMode = true;
+                document.body.classList.add('dark-theme');
+                btnTheme.innerHTML = '☀️';
+            } else {
+                document.body.classList.remove('dark-theme');
+                btnTheme.innerHTML = '🌙';
+            }
+        }
+        
+        function toggleTheme() {
+            AppState.isDarkMode = !AppState.isDarkMode;
+            if (AppState.isDarkMode) {
+                document.body.classList.add('dark-theme');
+                btnTheme.innerHTML = '☀️';
+                localStorage.setItem('canvasKidsTheme', 'dark');
+            } else {
+                document.body.classList.remove('dark-theme');
+                btnTheme.innerHTML = '🌙';
+                localStorage.setItem('canvasKidsTheme', 'light');
+            }
+            playClickSound();
+            speakMessage(AppState.isDarkMode ? 'Dark mode on' : 'Light mode on');
+        }
+
+        // ========== SOUND TOGGLE ==========
+        function toggleSound() {
+            AppState.isSoundOn = !AppState.isSoundOn;
+            if (AppState.isSoundOn) {
+                btnSound.innerHTML = '🔊';
+                btnSound.classList.remove('off');
+                speakMessage('Sound on!');
+            } else {
+                btnSound.innerHTML = '🔇';
+                btnSound.classList.add('off');
+                window.speechSynthesis.cancel();
+            }
+            playClickSound();
+        }
+
+        // ========== BGM TOGGLE ==========
+        function toggleBgm() {
+            AppState.isBgmOn = !AppState.isBgmOn;
+            if (AppState.isBgmOn) {
+                bgmPlayer.play().catch(e => console.log('Autoplay prevented'));
+                btnBgm.innerHTML = '🎵';
+                btnBgm.classList.remove('off');
+            } else {
+                bgmPlayer.pause();
+                btnBgm.innerHTML = '🎵';
+                btnBgm.classList.add('off');
+                btnBgm.style.opacity = '0.6';
+            }
+            playClickSound();
+        }
+
+        // ========== EVENT LISTENERS ==========
+        function bindEvents() {
+            if (btnBgm) btnBgm.addEventListener('click', toggleBgm);
+            if (btnSound) btnSound.addEventListener('click', toggleSound);
+            if (btnTheme) btnTheme.addEventListener('click', toggleTheme);
+            if (toggleSizeBtn) toggleSizeBtn.addEventListener('click', toggleSize);
+        }
+
+        // ========== INITIALIZE PAGE ==========
+        function init() {
+            generateShapeButtons();
+            bindEvents();
+            initTheme();
+            
+            // Set initial shape display
+            if (shapeDisplay) {
+                shapeDisplay.className = 'shape-object shape-circle size-big';
+                shapeNameElem.textContent = 'Circle';
+            }
+            AppState.currentShapeClass = 'shape-circle';
+            AppState.currentShapeName = 'Circle';
+            AppState.currentSizeBig = true;
+            
+            // BGM off by default
+            if (btnBgm) {
+                btnBgm.classList.add('off');
+                btnBgm.style.opacity = '0.6';
+            }
+            
+            // Welcome message
+            setTimeout(() => {
+                speakMessage('Welcome to shapes! Tap any shape button to see and learn.');
+            }, 500);
+        }
+
+        // Start everything
+        document.addEventListener('DOMContentLoaded', init);
+        
+        // Expose for any inline usage
+        window.speakMessage = speakMessage;
+        window.playClickSound = playClickSound;
+        window.triggerConfetti = triggerConfetti;
+    </script>
+</body>
+</html>

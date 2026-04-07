@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Canvas Kids - Fruits & Vegetables</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #ff5e7e;
+            --secondary-color: #4dc2ff;
+            --accent-color: #ffc93c;
+            --bg-color: #f0f8ff;
+            --nav-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --card-bg: #ffffff;
+            --card-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            --hover-shadow: 0 12px 32px rgba(0,0,0,0.15);
+            --border-radius: 24px;
+            --transition: all 0.3s ease;
+        }
+
+        body.dark-theme {
+            --primary-color: #ff476c;
+            --secondary-color: #29b6f6;
+            --accent-color: #ffca28;
+            --bg-color: #121212;
+            --nav-bg: #1e1e1e;
+            --text-main: #f0f0f0;
+            --text-muted: #bbbbbb;
+            --card-bg: #2d2d2d;
+            --card-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            --hover-shadow: 0 12px 32px rgba(0,0,0,0.6);
+        }
+
+        body {
+            font-family: 'Fredoka', 'Segoe UI', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            transition: var(--transition);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        #top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: var(--nav-bg);
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            transition: var(--transition);
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-logo {
+            font-size: 28px;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .nav-btn {
+            background: var(--bg-color);
+            color: var(--secondary-color);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+
+        .nav-btn.off {
+            color: var(--accent-color);
+            opacity: 0.7;
+        }
+
+        /* Main Content */
+        #app-content {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .view-section {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            background: var(--card-bg);
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+        }
+
+        .section-header h2 {
+            color: var(--primary-color);
+            font-size: 32px;
+            font-weight: 600;
+        }
+
+        /* Section Titles */
+        .category-title {
+            text-align: center;
+            font-size: 28px;
+            color: var(--secondary-color);
+            margin: 30px 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        /* Grid Container */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 20px;
+        }
+
+        /* Simple Food Card - NO images, NO icons, just name */
+        .food-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 28px 12px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border: 3px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
+        }
+
+        .food-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--hover-shadow);
+            border-color: var(--secondary-color);
+            background: var(--bg-color);
+        }
+
+        /* Only the name - big and clear */
+        .food-card h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            word-wrap: break-word;
+            width: 100%;
+        }
+
+        /* Simple click hint */
+        .click-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-top: 12px;
+            opacity: 0.7;
+        }
+
+        /* Message Popup (instead of image modal) */
+        .message-popup {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--primary-color);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 60px;
+            font-size: 24px;
+            font-weight: 600;
+            font-family: 'Fredoka', sans-serif;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 2000;
+            transition: transform 0.3s ease;
+            text-align: center;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .message-popup.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 600px) {
+            .message-popup {
+                font-size: 18px;
+                padding: 12px 24px;
+                white-space: normal;
+                text-align: center;
+                width: 80%;
+            }
+        }
+
+        /* Helper for repeat button */
+        .nav-btn.btn-bounce:hover {
+            animation: bounce 0.5s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-6px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 680px) {
+            #top-nav {
+                padding: 10px 15px;
+            }
+            .nav-logo {
+                font-size: 22px;
+            }
+            #app-content {
+                padding: 20px;
+            }
+            .section-header h2 {
+                font-size: 24px;
+            }
+            .category-title {
+                font-size: 22px;
+            }
+            .grid-container {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+                gap: 14px;
+            }
+            .food-card h3 {
+                font-size: 18px;
+            }
+            .click-hint {
+                font-size: 9px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav id="top-nav">
+        <div class="nav-left">
+            <button id="btn-home" class="nav-btn" onclick="window.location.href='index.html'" aria-label="Home" title="Home">
+                🏠
+            </button>
+            <h1 class="nav-logo">Canvas Kids</h1>
+        </div>
+        <div class="nav-right">
+            <button id="btn-bgm" class="nav-btn" aria-label="Background Music">🎵</button>
+            <button id="btn-sound" class="nav-btn" aria-label="Sound Effects">🔊</button>
+            <button id="btn-theme" class="nav-btn" aria-label="Dark/Light Mode">🌙</button>
+        </div>
+    </nav>
+
+    <main id="app-content">
+        <section id="sec-fruits" class="view-section active">
+            <div class="section-header">
+                <h2>🍎 Fruits & Vegetables 🥕</h2>
+                <button class="nav-btn btn-bounce" onclick="speakMessage('Fruits and vegetables are healthy and yummy! Tap any name to learn.')">
+                    🔁
+                </button>
+            </div>
+
+            <!-- Fruits Section - Only names, no icons -->
+            <div class="category-title">
+                <span>🍓 FRUITS</span>
+            </div>
+            <div class="grid-container" id="fruits-grid"></div>
+
+            <!-- Vegetables Section - Only names, no icons -->
+            <div class="category-title">
+                <span>🥬 VEGETABLES</span>
+            </div>
+            <div class="grid-container" id="vegetables-grid"></div>
+        </section>
+    </main>
+
+    <!-- Simple message popup instead of image modal -->
+    <div id="messagePopup" class="message-popup"></div>
+
+    <audio id="bgm-player" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-funny-puppy-music-loop-2746.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // ============================================================
+        // SIMPLE FRUITS & VEGETABLES - NO IMAGES, NO FONTAWESOME ICONS
+        // Just names and speech feedback
+        // ============================================================
+        
+        const fruitsData = [
+            'APPLE', 'BANANA', 'MANGO', 'ORANGE', 'STRAWBERRY',
+            'GRAPES', 'WATERMELON', 'PINEAPPLE', 'BLUEBERRY', 'KIWI',
+            'PEAR', 'PEACH', 'CHERRY', 'POMEGRANATE', 'DRAGON FRUIT'
+        ];
+
+        const vegetablesData = [
+            'CARROT', 'BROCCOLI', 'POTATO', 'TOMATO', 'CUCUMBER',
+            'SPINACH', 'CORN', 'BELL PEPPER', 'PEAS', 'CAULIFLOWER',
+            'PUMPKIN', 'EGGPLANT', 'ONION', 'MUSHROOM', 'ASPARAGUS'
+        ];
+
+        // ========== APP STATE ==========
+        const AppState = {
+            isBgmOn: false,
+            isSoundOn: true,
+            isDarkMode: false
+        };
+
+        // DOM Elements
+        const bgmPlayer = document.getElementById('bgm-player');
+        const btnBgm = document.getElementById('btn-bgm');
+        const btnSound = document.getElementById('btn-sound');
+        const btnTheme = document.getElementById('btn-theme');
+        const messagePopup = document.getElementById('messagePopup');
+        let popupTimeout = null;
+
+        // ========== SPEECH SYNTHESIS ==========
+        function speakMessage(text) {
+            if (!AppState.isSoundOn) return;
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            utterance.pitch = 1.1;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Show temporary message popup
+        function showMessage(text) {
+            if (messagePopup) {
+                messagePopup.textContent = text;
+                messagePopup.classList.add('show');
+                
+                if (popupTimeout) clearTimeout(popupTimeout);
+                popupTimeout = setTimeout(() => {
+                    messagePopup.classList.remove('show');
+                }, 1800);
+            }
+        }
+
+        // Soft click sound effect
+        function playClickSound() {
+            if (!AppState.isSoundOn) return;
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(720, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(1100, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.07, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.12);
+            } catch(e) { /* silent fallback */ }
+        }
+
+        // Simple confetti for fun (optional but kids love it)
+        function triggerConfetti() {
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'fixed';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100vw';
+            canvas.style.height = '100vh';
+            canvas.style.pointerEvents = 'none';
+            canvas.style.zIndex = '9999';
+            document.body.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const pieces = [];
+            const colors = ['#ff5e7e', '#4dc2ff', '#ffc93c', '#5deb7a', '#ffa500'];
+            for (let i = 0; i < 50; i++) {
+                pieces.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    vx: (Math.random() - 0.5) * 14,
+                    vy: (Math.random() - 1) * 14 - 5,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rotation: Math.random() * 360,
+                    rs: (Math.random() - 0.5) * 12
+                });
+            }
+            let opacity = 0.85;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let active = false;
+                for (let p of pieces) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.38;
+                    p.rotation += p.rs;
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = opacity;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+                    if (p.y < canvas.height + 50) active = true;
+                }
+                if (active && opacity > 0) {
+                    opacity -= 0.015;
+                    requestAnimationFrame(animate);
+                } else {
+                    document.body.removeChild(canvas);
+                }
+            }
+            animate();
+        }
+
+        // Handle click on fruit/vegetable
+        function onItemClick(itemName, category) {
+            playClickSound();
+            triggerConfetti();
+            const message = `${itemName}! A delicious ${category.toLowerCase()}.`;
+            showMessage(itemName);
+            speakMessage(message);
+        }
+
+        // ========== GENERATE FRUITS CARDS - NO ICONS, JUST NAME ==========
+        function generateFruits() {
+            const container = document.getElementById('fruits-grid');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            fruitsData.forEach(fruit => {
+                const card = document.createElement('div');
+                card.className = 'food-card';
+                // Only the name and tiny hint
+                card.innerHTML = `
+                    <h3>${fruit}</h3>
+                    <div class="click-hint">▼ tap ▼</div>
+                `;
+                card.onclick = () => onItemClick(fruit, 'Fruit');
+                container.appendChild(card);
+            });
+        }
+
+        // ========== GENERATE VEGETABLES CARDS - NO ICONS ==========
+        function generateVegetables() {
+            const container = document.getElementById('vegetables-grid');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            vegetablesData.forEach(vegetable => {
+                const card = document.createElement('div');
+                card.className = 'food-card';
+                card.innerHTML = `
+                    <h3>${vegetable}</h3>
+                    <div class="click-hint">▼ tap ▼</div>
+                `;
+                card.onclick = () => onItemClick(vegetable, 'Vegetable');
+                container.appendChild(card);
+            });
+        }
+
+        // ========== THEME TOGGLE ==========
+        function initTheme() {
+            const savedTheme = localStorage.getItem('canvasKidsTheme');
+            if (savedTheme === 'dark') {
+                AppState.isDarkMode = true;
+                document.body.classList.add('dark-theme');
+                btnTheme.innerHTML = '☀️';
+            } else {
+                document.body.classList.remove('dark-theme');
+                btnTheme.innerHTML = '🌙';
+            }
+        }
+        
+        function toggleTheme() {
+            AppState.isDarkMode = !AppState.isDarkMode;
+            if (AppState.isDarkMode) {
+                document.body.classList.add('dark-theme');
+                btnTheme.innerHTML = '☀️';
+                localStorage.setItem('canvasKidsTheme', 'dark');
+            } else {
+                document.body.classList.remove('dark-theme');
+                btnTheme.innerHTML = '🌙';
+                localStorage.setItem('canvasKidsTheme', 'light');
+            }
+            playClickSound();
+            speakMessage(AppState.isDarkMode ? 'Dark mode on' : 'Light mode on');
+        }
+
+        // ========== SOUND TOGGLE ==========
+        function toggleSound() {
+            AppState.isSoundOn = !AppState.isSoundOn;
+            if (AppState.isSoundOn) {
+                btnSound.innerHTML = '🔊';
+                btnSound.classList.remove('off');
+                speakMessage('Sound on!');
+            } else {
+                btnSound.innerHTML = '🔇';
+                btnSound.classList.add('off');
+                window.speechSynthesis.cancel();
+            }
+            playClickSound();
+        }
+
+        // ========== BGM TOGGLE ==========
+        function toggleBgm() {
+            AppState.isBgmOn = !AppState.isBgmOn;
+            if (AppState.isBgmOn) {
+                bgmPlayer.play().catch(e => console.log('autoplay blocked'));
+                btnBgm.innerHTML = '🎵';
+                btnBgm.classList.remove('off');
+            } else {
+                bgmPlayer.pause();
+                btnBgm.innerHTML = '🎵';
+                btnBgm.classList.add('off');
+                btnBgm.style.opacity = '0.6';
+            }
+            playClickSound();
+        }
+
+        // ========== EVENT BINDINGS ==========
+        function bindEvents() {
+            if (btnBgm) btnBgm.addEventListener('click', toggleBgm);
+            if (btnSound) btnSound.addEventListener('click', toggleSound);
+            if (btnTheme) btnTheme.addEventListener('click', toggleTheme);
+        }
+
+        // ========== INITIALIZE APP ==========
+        function init() {
+            generateFruits();
+            generateVegetables();
+            bindEvents();
+            initTheme();
+            
+            // BGM starts muted by default
+            if (btnBgm) {
+                btnBgm.classList.add('off');
+                btnBgm.style.opacity = '0.6';
+            }
+            
+            // welcome message
+            setTimeout(() => {
+                speakMessage('Welcome! Tap any fruit or vegetable name to learn.');
+                showMessage('👋 Tap any item!');
+            }, 500);
+        }
+
+        // Start everything
+        document.addEventListener('DOMContentLoaded', init);
+        
+        // Expose for inline handlers
+        window.speakMessage = speakMessage;
+        window.showMessage = showMessage;
+    </script>
+</body>
+</html>

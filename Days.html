@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Canvas Kids - Days, Weather & Seasons</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #ff5e7e;
+            --secondary-color: #4dc2ff;
+            --accent-color: #ffc93c;
+            --success-color: #5deb7a;
+            --warning-color: #ffa500;
+            --bg-color: #f0f8ff;
+            --nav-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --card-bg: #ffffff;
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            --hover-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+            --border-radius: 20px;
+            --transition: all 0.3s ease;
+        }
+
+        body.dark-theme {
+            --primary-color: #ff476c;
+            --secondary-color: #29b6f6;
+            --accent-color: #ffca28;
+            --success-color: #66bb6a;
+            --warning-color: #ffa726;
+            --bg-color: #121212;
+            --nav-bg: #1e1e1e;
+            --text-main: #f0f0f0;
+            --text-muted: #aaaaaa;
+            --card-bg: #2d2d2d;
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            --hover-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+        }
+
+        body {
+            font-family: 'Fredoka', 'Segoe UI', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            transition: var(--transition);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        #top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: var(--nav-bg);
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            transition: var(--transition);
+        }
+
+        .nav-left,
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-logo {
+            font-size: 28px;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .nav-btn {
+            background: var(--bg-color);
+            color: var(--secondary-color);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-btn.off {
+            color: var(--warning-color);
+            opacity: 0.7;
+        }
+
+        /* Main Content */
+        #app-content {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .view-section {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            background: var(--card-bg);
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+        }
+
+        .section-header h2 {
+            color: var(--primary-color);
+            font-size: 32px;
+        }
+
+        /* Section Titles */
+        .section-title {
+            text-align: center;
+            font-size: 28px;
+            color: var(--secondary-color);
+            margin: 30px 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        /* Horizontal Scroll for Days */
+        .days-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 15px 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .day-card {
+            background: var(--card-bg);
+            border-radius: 60px;
+            padding: 18px 28px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border: 2px solid transparent;
+            min-width: 130px;
+        }
+
+        .day-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            border-color: var(--secondary-color);
+        }
+
+        .day-card i {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .day-card h3 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        /* Grid for Weather & Seasons */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .weather-card,
+        .season-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border: 3px solid transparent;
+        }
+
+        .weather-card:hover,
+        .season-card:hover {
+            transform: scale(1.05);
+            box-shadow: var(--hover-shadow);
+            border-color: var(--secondary-color);
+        }
+
+        .weather-card i,
+        .season-card i {
+            font-size: 58px;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .weather-card h3,
+        .season-card h3 {
+            font-size: 22px;
+            margin-bottom: 5px;
+            color: var(--text-main);
+        }
+
+        .weather-card p,
+        .season-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        /* Bounce animation */
+        .btn-bounce:hover {
+            animation: bounce 0.5s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-8px);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            #top-nav {
+                padding: 10px 15px;
+            }
+
+            .nav-logo {
+                font-size: 22px;
+            }
+
+            #app-content {
+                padding: 20px;
+            }
+
+            .section-header h2 {
+                font-size: 26px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .day-card {
+                padding: 12px 20px;
+                min-width: 100px;
+            }
+
+            .day-card i {
+                font-size: 36px;
+            }
+
+            .day-card h3 {
+                font-size: 18px;
+            }
+
+            .grid-container {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav id="top-nav">
+        <div class="nav-left">
+            <button id="btn-home" class="nav-btn" onclick="window.location.href='index.html'" aria-label="Home"
+                title="Home">
+                <i class="fa-solid fa-house"></i>
+            </button>
+            <h1 class="nav-logo">Canvas Kids</h1>
+        </div>
+        <div class="nav-right">
+            <button id="btn-bgm" class="nav-btn" aria-label="Background Music"><i
+                    class="fa-solid fa-music"></i></button>
+            <button id="btn-sound" class="nav-btn" aria-label="Sound"><i class="fa-solid fa-volume-high"></i></button>
+            <button id="btn-theme" class="nav-btn" aria-label="Dark/Light Mode"><i
+                    class="fa-solid fa-moon"></i></button>
+        </div>
+    </nav>
+
+    <main id="app-content">
+        <section id="sec-days" class="view-section active">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-calendar-days" style="margin-right: 12px;"></i> Days, Weather & Seasons</h2>
+                <button class="nav-btn btn-bounce" onclick="speakMessage('Learn about days, weather and seasons!')">
+                    <i class="fa-solid fa-repeat"></i>
+                </button>
+            </div>
+
+            <!-- Days of the Week -->
+            <div class="section-title">
+                <i class="fa-solid fa-calendar-week"></i>
+                <span>Days of the Week</span>
+            </div>
+            <div class="days-scroll" id="days-container"></div>
+
+            <!-- Weather Types -->
+            <div class="section-title">
+                <i class="fa-solid fa-cloud-sun"></i>
+                <span>Weather</span>
+            </div>
+            <div class="grid-container" id="weather-grid"></div>
+
+            <!-- Seasons -->
+            <div class="section-title">
+                <i class="fa-solid fa-leaf"></i>
+                <span>Seasons</span>
+            </div>
+            <div class="grid-container" id="seasons-grid"></div>
+        </section>
+    </main>
+
+    <audio id="bgm-player" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-funny-puppy-music-loop-2746.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // ========== DATA ==========
+        // Days of the Week with Font Awesome icons
+        const daysData = [
+            { name: 'Monday', icon: 'fa-calendar-day', color: '#ff5e7e', description: 'Start of the week!' },
+            { name: 'Tuesday', icon: 'fa-calendar-day', color: '#ff9f4a', description: 'Time to work hard' },
+            { name: 'Wednesday', icon: 'fa-calendar-day', color: '#ffc93c', description: 'Midweek fun!' },
+            { name: 'Thursday', icon: 'fa-calendar-day', color: '#5deb7a', description: 'Almost Friday!' },
+            { name: 'Friday', icon: 'fa-calendar-day', color: '#4dc2ff', description: 'Last work day!' },
+            { name: 'Saturday', icon: 'fa-calendar-day', color: '#9c27b0', description: 'Weekend fun!' },
+            { name: 'Sunday', icon: 'fa-calendar-day', color: '#e91e63', description: 'Family day!' }
+        ];
+
+        // Weather Types
+        const weatherData = [
+            { name: 'Sunny', icon: 'fa-sun', color: '#ffca28', description: 'Warm and bright!' },
+            { name: 'Rainy', icon: 'fa-cloud-rain', color: '#4dc2ff', description: 'Don\'t forget your umbrella! ' },
+            { name: 'Cloudy', icon: 'fa-cloud', color: '#9e9e9e', description: 'Overcast sky ' },
+            { name: 'Snowy', icon: 'fa-snowflake', color: '#81d4fa', description: 'Let\'s make a snowman! ' },
+            { name: 'Windy', icon: 'fa-wind', color: '#b0bec5', description: 'Hold onto your hat! ' },
+            { name: 'Stormy', icon: 'fa-cloud-bolt', color: '#7b1fa2', description: 'Thunder and lightning! ' },
+            { name: 'Foggy', icon: 'fa-smog', color: '#a1887f', description: 'Drive carefully! ' },
+            { name: 'Hot', icon: 'fa-temperature-high', color: '#ff7043', description: 'Stay hydrated! ' },
+            { name: 'Cold', icon: 'fa-temperature-low', color: '#4fc3f7', description: 'Wear a jacket! ' }
+        ];
+
+        // Seasons Data
+        const seasonsData = [
+            { name: 'Spring', icon: 'fa-seedling', color: '#66bb6a', description: 'Flowers bloom! ' },
+            { name: 'Summer', icon: 'fa-umbrella-beach', color: '#ff9800', description: 'Time for ice cream! ' },
+            { name: 'Autumn', icon: 'fa-leaf', color: '#ff7043', description: 'Leaves fall! ' },
+            { name: 'Winter', icon: 'fa-snowman', color: '#4fc3f7', description: 'Snow and holidays! ' }
+        ];
+
+        // ========== APP STATE ==========
+        const AppState = {
+            isBgmOn: false,
+            isSoundOn: true,
+            isDarkMode: false
+        };
+
+        // DOM Elements
+        const bgmPlayer = document.getElementById('bgm-player');
+        const btnBgm = document.getElementById('btn-bgm');
+        const btnSound = document.getElementById('btn-sound');
+        const btnTheme = document.getElementById('btn-theme');
+
+        // ========== SPEECH FUNCTION ==========
+        function speakMessage(text) {
+            if (!AppState.isSoundOn) return;
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            utterance.pitch = 1.1;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Simple click sound effect
+        function playClickSound() {
+            if (!AppState.isSoundOn) return;
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.15);
+            } catch (e) { console.log("Audio not supported"); }
+        }
+
+        // Confetti celebration effect
+        function triggerConfetti() {
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'fixed';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100vw';
+            canvas.style.height = '100vh';
+            canvas.style.pointerEvents = 'none';
+            canvas.style.zIndex = '9999';
+            document.body.appendChild(canvas);
+
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const pieces = [];
+            const colors = ['#ff5e7e', '#4dc2ff', '#ffc93c', '#5deb7a', '#ffa500', '#e91e63', '#9c27b0'];
+            for (let i = 0; i < 70; i++) {
+                pieces.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    vx: (Math.random() - 0.5) * 16,
+                    vy: (Math.random() - 1) * 16 - 6,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rotation: Math.random() * 360,
+                    rs: (Math.random() - 0.5) * 12
+                });
+            }
+            let opacity = 1;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let active = false;
+                for (let p of pieces) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.4;
+                    p.rotation += p.rs;
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = opacity;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+                    if (p.y < canvas.height) active = true;
+                }
+                if (active && opacity > 0) {
+                    opacity -= 0.008;
+                    requestAnimationFrame(animate);
+                } else {
+                    document.body.removeChild(canvas);
+                }
+            }
+            animate();
+        }
+
+        // ========== GENERATE DAYS CARDS ==========
+        function generateDays() {
+            const container = document.getElementById('days-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            daysData.forEach(day => {
+                const card = document.createElement('div');
+                card.className = 'day-card';
+                card.innerHTML = `
+                    <i class="fa-solid ${day.icon}" style="color: ${day.color};"></i>
+                    <h3>${day.name}</h3>
+                    <p style="font-size: 12px; margin-top: 5px;">${day.description}</p>
+                `;
+                card.onclick = () => {
+                    playClickSound();
+                    triggerConfetti();
+                    speakMessage(`${day.name}! ${day.description}`);
+                };
+                container.appendChild(card);
+            });
+        }
+
+        // ========== GENERATE WEATHER CARDS ==========
+        function generateWeather() {
+            const container = document.getElementById('weather-grid');
+            if (!container) return;
+            container.innerHTML = '';
+
+            weatherData.forEach(weather => {
+                const card = document.createElement('div');
+                card.className = 'weather-card';
+                card.innerHTML = `
+                    <i class="fa-solid ${weather.icon}" style="font-size: 58px; color: ${weather.color};"></i>
+                    <h3>${weather.name}</h3>
+                    <p>${weather.description}</p>
+                `;
+                card.onclick = () => {
+                    playClickSound();
+                    triggerConfetti();
+                    speakMessage(`It is ${weather.name}! ${weather.description}`);
+                };
+                container.appendChild(card);
+            });
+        }
+
+        // ========== GENERATE SEASONS CARDS ==========
+        function generateSeasons() {
+            const container = document.getElementById('seasons-grid');
+            if (!container) return;
+            container.innerHTML = '';
+
+            seasonsData.forEach(season => {
+                const card = document.createElement('div');
+                card.className = 'season-card';
+                card.innerHTML = `
+                    <i class="fa-solid ${season.icon}" style="font-size: 58px; color: ${season.color};"></i>
+                    <h3>${season.name}</h3>
+                    <p>${season.description}</p>
+                `;
+                card.onclick = () => {
+                    playClickSound();
+                    triggerConfetti();
+                    speakMessage(`${season.name} season! ${season.description}`);
+                };
+                container.appendChild(card);
+            });
+        }
+
+        // ========== THEME TOGGLE ==========
+        function initTheme() {
+            const savedTheme = localStorage.getItem('canvasKidsTheme');
+            if (savedTheme === 'dark') {
+                AppState.isDarkMode = true;
+                document.body.classList.add('dark-theme');
+                btnTheme.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            } else {
+                document.body.classList.remove('dark-theme');
+                btnTheme.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            }
+        }
+
+        function toggleTheme() {
+            AppState.isDarkMode = !AppState.isDarkMode;
+            if (AppState.isDarkMode) {
+                document.body.classList.add('dark-theme');
+                btnTheme.innerHTML = '<i class="fa-solid fa-sun"></i>';
+                localStorage.setItem('canvasKidsTheme', 'dark');
+            } else {
+                document.body.classList.remove('dark-theme');
+                btnTheme.innerHTML = '<i class="fa-solid fa-moon"></i>';
+                localStorage.setItem('canvasKidsTheme', 'light');
+            }
+            playClickSound();
+            speakMessage(AppState.isDarkMode ? 'Dark mode on' : 'Light mode on');
+        }
+
+        // ========== SOUND TOGGLE ==========
+        function toggleSound() {
+            AppState.isSoundOn = !AppState.isSoundOn;
+            if (AppState.isSoundOn) {
+                btnSound.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+                btnSound.classList.remove('off');
+                speakMessage('Sound on!');
+            } else {
+                btnSound.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+                btnSound.classList.add('off');
+                window.speechSynthesis.cancel();
+            }
+            playClickSound();
+        }
+
+        // ========== BGM TOGGLE ==========
+        function toggleBgm() {
+            AppState.isBgmOn = !AppState.isBgmOn;
+            if (AppState.isBgmOn) {
+                bgmPlayer.play().catch(e => console.log('Autoplay prevented - user interaction needed'));
+                btnBgm.innerHTML = '<i class="fa-solid fa-music"></i>';
+                btnBgm.classList.remove('off');
+            } else {
+                bgmPlayer.pause();
+                btnBgm.innerHTML = '<i class="fa-solid fa-music" style="opacity:0.5;"></i>';
+                btnBgm.classList.add('off');
+            }
+            playClickSound();
+        }
+
+        // ========== EVENT LISTENERS ==========
+        function bindEvents() {
+            if (btnBgm) btnBgm.addEventListener('click', toggleBgm);
+            if (btnSound) btnSound.addEventListener('click', toggleSound);
+            if (btnTheme) btnTheme.addEventListener('click', toggleTheme);
+        }
+
+        // ========== INITIALIZE PAGE ==========
+        function init() {
+            generateDays();
+            generateWeather();
+            generateSeasons();
+            bindEvents();
+            initTheme();
+            // Set initial BGM button style (off by default)
+            btnBgm.classList.add('off');
+            btnBgm.innerHTML = '<i class="fa-solid fa-music" style="opacity:0.5;"></i>';
+            // Welcome message
+            setTimeout(() => {
+                speakMessage('Welcome to Days, Weather and Seasons! Tap any card to learn.');
+            }, 500);
+        }
+
+        // Start everything when DOM is ready
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Expose for inline button
+        window.speakMessage = speakMessage;
+        window.playClickSound = playClickSound;
+        window.triggerConfetti = triggerConfetti;
+    </script>
+</body>
+
+</html>
